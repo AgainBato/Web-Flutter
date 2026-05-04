@@ -3,6 +3,7 @@ import 'package:fe_admin_web/screens/user_management_screen.dart';
 import 'package:fe_admin_web/screens/feed_management_screen.dart';
 import 'package:fe_admin_web/screens/subject_management_screen.dart';
 import 'package:fe_admin_web/screens/settings_screen.dart';
+import 'package:fe_admin_web/screens/auth_screen.dart';
 
 class AdminLayoutScreen extends StatefulWidget {
   const AdminLayoutScreen({Key? key}) : super(key: key);
@@ -14,6 +15,33 @@ class AdminLayoutScreen extends StatefulWidget {
 class _AdminLayoutScreenState extends State<AdminLayoutScreen> {
   int _selectedIndex = 0;
 
+void _showLogoutDialog(BuildContext context) {
+  showDialog(
+    context: context,
+    builder: (ctx) => AlertDialog(
+      title: const Text('Xác nhận đăng xuất', style: TextStyle(fontWeight: FontWeight.bold)),
+      content: const Text('Bạn có chắc chắn muốn thoát khỏi hệ thống quản trị không?'),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(ctx), 
+          child: const Text('Hủy', style: TextStyle(color: Colors.grey))
+        ),
+        ElevatedButton(
+          onPressed: () {
+            Navigator.pop(ctx); // Đóng dialog
+            // Quay lại màn hình đăng nhập và xóa sạch lịch sử chuyển trang trước đó
+            Navigator.pushReplacement(
+              context, 
+              MaterialPageRoute(builder: (context) => const AuthScreen())
+            );
+          },
+          style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+          child: const Text('Đăng xuất', style: TextStyle(color: Colors.white)),
+        ),
+      ],
+    ),
+  );
+}
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -148,7 +176,13 @@ class _AdminLayoutScreenState extends State<AdminLayoutScreen> {
     final activeColor = const Color(0xFF4A7DFF);
 
     return InkWell(
-      onTap: () => setState(() => _selectedIndex = index),
+      onTap: () {
+        if (index == 5) {
+            _showLogoutDialog(context);
+        } else {
+            setState(() => _selectedIndex = index);
+        }
+    },
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
         decoration: BoxDecoration(
